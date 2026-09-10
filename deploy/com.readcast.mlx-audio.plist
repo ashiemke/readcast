@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  The speech server. A separate process on purpose: the model holds several
+  gigabytes and must not be imported into the API process.
+
+  Port 8770 is used because 8080 was already taken on this machine (llama.cpp)
+  and 8000 by OrbStack. If you change it, change tts.mlx_url in config.yml too.
+-->
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.readcast.mlx-audio</string>
+
+  <key>ProgramArguments</key>
+  <array>
+    <string>REPLACE_ME_DIR/.venv/bin/python</string>
+    <string>-m</string>
+    <string>mlx_audio.server</string>
+    <string>--host</string>
+    <string>127.0.0.1</string>
+    <string>--port</string>
+    <string>8770</string>
+  </array>
+
+  <key>WorkingDirectory</key>
+  <string>REPLACE_ME_DIR</string>
+
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PATH</key>
+    <string>/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+  </dict>
+
+  <key>RunAtLoad</key>
+  <true/>
+  <key>KeepAlive</key>
+  <true/>
+
+  <key>StandardOutPath</key>
+  <string>REPLACE_ME_DIR/data/mlx-audio.log</string>
+  <key>StandardErrorPath</key>
+  <string>REPLACE_ME_DIR/data/mlx-audio.log</string>
+</dict>
+</plist>

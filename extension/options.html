@@ -1,0 +1,40 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>readcast options</title>
+<style>
+  body { font: 14px/1.6 ui-monospace, SFMono-Regular, Menlo, monospace;
+         background:#14161a; color:#e7e9ee; margin:0; padding:2rem; }
+  h1 { font-size:1rem; text-transform:uppercase; letter-spacing:.06em; color:#9aa3b2;
+       margin:0 0 .2rem; }
+  .sub { color:#5c6473; margin:0 0 1.6rem; }
+  label { display:block; margin:1.2rem 0 .3rem; color:#9aa3b2; }
+  input { width:100%; max-width:34rem; padding:.5rem .6rem; background:#1c1f26;
+          border:1px solid #2b303b; border-radius:5px; color:#e7e9ee; font:inherit; }
+  input:focus { outline:none; border-color:#3f7d5c; }
+  button { margin-top:1.4rem; margin-right:.6rem; padding:.5rem 1.1rem; background:#2f6f4f;
+           color:#fff; border:0; border-radius:5px; font:inherit; cursor:pointer; }
+  button.secondary { background:#2b303b; }
+  .hint { color:#5c6473; font-size:.85rem; max-width:34rem; }
+  .state { margin-top:1.2rem; padding:.6rem .8rem; border-radius:5px; background:#1c1f26;
+           max-width:34rem; color:#9aa3b2; }
+  .ok { color:#7bd88f; } .bad { color:#e2727f; }
+</style>
+<h1>readcast</h1>
+<p class="sub">Settings are stored per Chrome profile. Each profile you use needs
+its own token.</p>
+
+<label for="host">Host</label>
+<input id="host" placeholder="http://127.0.0.1:8788" spellcheck="false">
+<p class="hint">Where readcast is listening. Use the loopback address when the
+browser and readcast run on the same machine.</p>
+
+<label for="token">API token</label>
+<input id="token" type="password" placeholder="the api_token from config.yml" spellcheck="false">
+<p class="hint">From <code>config.yml</code>. Saves as you type — no need to
+press anything.</p>
+
+<button id="test">Test connection</button>
+<button id="reveal" class="secondary">Show token</button>
+
+<div class="state" id="state">checking…</div>
+<script src="options.js"></script>

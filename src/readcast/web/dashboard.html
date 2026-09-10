@@ -1,0 +1,547 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>readcast</title>
+<style>
+  :root {
+    --bg:#14161a; --panel:#1a1d23; --line:#262a33; --ink:#e7e9ee; --dim:#9aa3b2;
+    --faint:#5c6473; --ok:#7bd88f; --warn:#e3c46b; --bad:#e2727f; --live:#6bc5e8;
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:14px/1.55 ui-monospace,
+         SFMono-Regular, Menlo, monospace; }
+  header { display:flex; gap:1rem; align-items:baseline; flex-wrap:wrap;
+           padding:1rem 1.25rem; border-bottom:1px solid var(--line); }
+  h1 { font-size:.95rem; margin:0; letter-spacing:.08em; text-transform:uppercase; color:var(--dim); }
+  .dot { width:.55rem; height:.55rem; border-radius:50%; display:inline-block; margin-right:.35rem; }
+  .up { background:var(--ok); } .down { background:var(--bad); }
+  .feed { color:var(--live); text-decoration:none; word-break:break-all; font-size:.82rem; }
+  main { display:grid; gap:1rem; padding:1.25rem; grid-template-columns:minmax(0,1fr);
+         max-width:1350px; }
+  section { background:var(--panel); border:1px solid var(--line); border-radius:8px;
+            overflow:hidden; }
+  section > h2 { font-size:.72rem; letter-spacing:.1em; text-transform:uppercase;
+                 color:var(--dim); margin:0; padding:.7rem .9rem; border-bottom:1px solid var(--line); }
+  .pad { padding:.9rem; }
+  .bar { height:.5rem; background:#22262e; border-radius:99px; overflow:hidden; margin:.5rem 0 .35rem; }
+  .bar > i { display:block; height:100%; background:var(--live); transition:width .4s ease; }
+  .muted { color:var(--dim); } .faint { color:var(--faint); } .small { font-size:.82rem; }
+  ul { list-style:none; margin:0; padding:0; }
+  li.row { display:flex; gap:.6rem; align-items:center; padding:.55rem .9rem;
+           border-bottom:1px solid var(--line); }
+  li.row:last-child { border-bottom:0; }
+  li.q { cursor:grab; }
+  li.q.dragging { opacity:.4; }
+  li.q.over { box-shadow:inset 0 2px 0 var(--live); }
+  .grip { color:var(--faint); cursor:grab; user-select:none; }
+  .title { flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .title.click { cursor:pointer; }
+  .title.click:hover { color:var(--live); text-decoration:underline; }
+  button { background:#262a33; color:var(--ink); border:1px solid #333846; border-radius:5px;
+           padding:.25rem .6rem; font:inherit; font-size:.8rem; cursor:pointer; }
+  /* The arrows read as letters at the body size in a monospace face. */
+  button.icon { padding:.15rem .45rem; min-width:1.9rem; font-size:1rem; line-height:1.1; }
+  button.icon.playing { border-color:var(--live); color:var(--live); }
+  .voice { color:var(--dim); font-size:.78rem; min-width:5.6rem; display:inline-block;
+           text-align:center; }
+  button.mode { min-width:3.6rem; }
+  button.mode.fast { color:var(--ok); border-color:#2f5f47; }
+  button.mode.good { color:var(--warn); border-color:#5c4a1f; }
+  button.danger { color:var(--bad); border-color:#5c2b32; }
+  button.danger:hover { background:#5c2b32; color:#fff; }
+  button:hover { border-color:#4a5162; }
+  button.go { background:#2f6f4f; border-color:#2f6f4f; }
+  button.warn { background:#5c4a1f; border-color:#5c4a1f; }
+  .scroll { overflow-x:auto; }
+  /* Fixed layout so a long title truncates instead of widening the table. */
+  table { width:100%; border-collapse:collapse; table-layout:fixed; min-width:34rem; }
+  td, th { text-align:left; padding:.4rem .9rem; border-bottom:1px solid var(--line);
+           font-weight:400; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  th { color:var(--faint); font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; }
+  td.n { text-align:right; font-variant-numeric:tabular-nums; }
+  col.c-id { width:11.5rem; } col.c-state { width:9.5rem; } col.c-len { width:4.5rem; }
+  col.c-rtf { width:4rem; } col.c-flag { width:4rem; }
+  .done-at { color:var(--ok); }
+  .s-done{color:var(--ok);} .s-failed{color:var(--bad);} .s-ready{color:var(--ok);}
+  .s-queued{color:var(--dim);} .s-synthesizing,.s-assembling,.s-preparing,
+  .s-fetching,.s-extracting{color:var(--warn);}
+  dialog { background:var(--panel); color:var(--ink); border:1px solid var(--line);
+           border-radius:10px; width:min(880px,94vw); padding:0; }
+  dialog::backdrop { background:rgba(0,0,0,.6); }
+  .dlg-head { display:flex; gap:.75rem; align-items:center; padding:.85rem 1rem;
+              border-bottom:1px solid var(--line); }
+  .dlg-head strong { flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  textarea { width:100%; height:min(58vh,520px); background:#111318; color:var(--ink);
+             border:0; border-bottom:1px solid var(--line); padding:1rem; font:inherit;
+             line-height:1.65; resize:vertical; }
+  textarea:focus { outline:none; }
+  .dlg-foot { display:flex; gap:.6rem; align-items:center; padding:.75rem 1rem; }
+  .grow { flex:1; }
+  #gate { padding:2rem 1.25rem; }
+  input[type=password] { background:#111318; color:var(--ink); border:1px solid var(--line);
+                         border-radius:5px; padding:.5rem .6rem; font:inherit; width:min(30rem,90vw); }
+  .toast { position:fixed; bottom:1rem; right:1rem; background:#111; border:1px solid var(--line);
+           padding:.6rem .9rem; border-radius:6px; opacity:0; transition:opacity .2s; }
+  .toast.show { opacity:1; }
+</style>
+</head>
+<body>
+
+<div id="gate" hidden>
+  <h1>readcast</h1>
+  <p class="muted small">Paste the <code>api_token</code> from config.yml. It is kept in this
+     browser only.</p>
+  <p><input type="password" id="tok" placeholder="api token" autocomplete="off"></p>
+  <p><button class="go" id="tokgo">Connect</button> <span id="gatemsg" class="small"></span></p>
+</div>
+
+<div id="app" hidden>
+<header>
+  <h1>readcast</h1>
+  <span class="small"><i class="dot" id="apidot"></i><span id="apitxt">api</span></span>
+  <a class="feed" id="feed" href="#">feed</a>
+  <span class="grow"></span>
+  <button id="holdnew" class="mode" title="What happens to a new article once its text is ready"></button>
+  <span class="small faint" id="totals"></span>
+</header>
+
+<main>
+  <section>
+    <h2>now</h2>
+    <div class="pad" id="now"></div>
+  </section>
+
+  <section>
+    <h2>queue — drag to reorder, click a title to edit its text</h2>
+    <ul id="queue"></ul>
+  </section>
+
+  <section>
+    <h2>recent</h2>
+    <div class="scroll">
+      <table>
+        <colgroup>
+          <col class="c-id"><col class="c-state"><col class="c-len">
+          <col class="c-rtf"><col class="c-flag"><col>
+        </colgroup>
+        <thead><tr><th>id</th><th>state</th><th class="n">len</th><th class="n">rtf</th>
+          <th class="n">flag</th><th>title</th></tr></thead>
+        <tbody id="recent"></tbody>
+      </table>
+    </div>
+  </section>
+</main>
+</div>
+
+<dialog id="editor">
+  <div class="dlg-head">
+    <strong id="ed-title"></strong>
+    <span class="small faint" id="ed-meta"></span>
+    <button id="ed-close">Close</button>
+  </div>
+  <textarea id="ed-text" spellcheck="false"></textarea>
+  <div class="dlg-foot">
+    <button class="go" id="ed-save">Save text</button>
+    <button id="ed-rules">Re-run rules</button>
+    <button id="ed-hold">Hold</button>
+    <button id="ed-release">Release to audio</button>
+    <button class="warn" id="ed-rerender">Re-render</button>
+    <span class="grow"></span>
+    <span class="small faint" id="ed-msg"></span>
+  </div>
+</dialog>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+let TOKEN = localStorage.getItem("readcast-token") || "";
+let current = null, dragId = null, editing = null, dirty = false, editingData = null;
+
+// A token in the URL fragment (from `readcast ui`) never leaves the browser.
+// Pasting that URL while already on this page only changes the fragment, which
+// does not reload the document, so listen for that too.
+function adoptFragmentToken() {
+  const frag = new URLSearchParams(location.hash.slice(1));
+  const found = frag.get("token");
+  if (!found) return false;
+  TOKEN = found;
+  localStorage.setItem("readcast-token", TOKEN);
+  history.replaceState(null, "", location.pathname);
+  return true;
+}
+adoptFragmentToken();
+window.addEventListener("hashchange", () => { if (adoptFragmentToken()) refresh(); });
+
+async function api(path, options = {}) {
+  const response = await fetch(path, {
+    ...options,
+    headers: { "content-type": "application/json",
+               authorization: "Bearer " + TOKEN, ...(options.headers || {}) },
+  });
+  if (response.status === 401) { gate("that token was rejected"); throw new Error("401"); }
+  if (!response.ok) throw new Error(await response.text());
+  return response.status === 204 ? null : response.json();
+}
+
+function toast(message) {
+  const el = $("toast");
+  el.textContent = message; el.classList.add("show");
+  clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove("show"), 2200);
+}
+
+function gate(message = "") {
+  $("app").hidden = true; $("gate").hidden = false; $("gatemsg").textContent = message;
+}
+
+const hms = (s) => {
+  if (!s) return "—";
+  s = Math.round(s);
+  if (s >= 3600) return `${Math.floor(s / 3600)}h${String(Math.floor((s % 3600) / 60)).padStart(2, "0")}m`;
+  if (s >= 60) return `${Math.floor(s / 60)}m${String(s % 60).padStart(2, "0")}s`;
+  return s + "s";
+};
+const clock = (s) => s ? `${Math.floor(s / 60)}:${String(Math.round(s) % 60).padStart(2, "0")}` : "—";
+const esc = (t) => String(t ?? "").replace(/[<>&"]/g, (c) =>
+  ({ "<": "&lt;", ">": "&gt;", "&": "&amp;", '"': "&quot;" }[c]));
+
+function renderNow(now) {
+  if (!now) { $("now").innerHTML = '<span class="muted">idle — nothing running</span>'; return; }
+  const pct = now.total ? Math.round((now.done / now.total) * 100) : 0;
+  $("now").innerHTML = `
+    <div>${esc(now.title)}</div>
+    <div class="bar"><i style="width:${pct}%"></i></div>
+    <div class="small muted">
+      <span class="s-${now.state}">${now.state}</span>
+      ${now.total ? ` · ${now.done}/${now.total} chunks` : ""}
+      ${now.eta_s ? ` · eta ${hms(now.eta_s)}` : ""}
+      ${now.finish_label && now.finish_label !== "—"
+        ? ` · <span class="done-at">done ~${esc(now.finish_label)}</span>` : ""}
+      ${now.per_chunk_s ? ` · ${Math.round(now.per_chunk_s)}s/chunk` : ""}
+      ${now.words ? ` · ${now.words.toLocaleString()} words` : ""}
+      ${now.voice ? ` · voice ${esc(now.voice)}` : ""}
+    </div>
+    <div class="small faint">${esc(now.id)}
+      <button class="danger" id="stopnow" data-cancel="${esc(now.id)}"
+              title="Stop this render. The audio already made is kept.">stop</button>
+    </div>`;
+}
+
+function renderQueue(ready, queued) {
+  const list = $("queue");
+  if (!ready.length && !queued.length) {
+    list.innerHTML = '<li class="row muted">empty</li>'; return;
+  }
+  list.innerHTML =
+    ready.map((j) => `
+      <li class="row q" draggable="true" data-id="${esc(j.id)}">
+        <span class="grip">⠿</span>
+        <span class="title click" data-edit="${esc(j.id)}">${esc(j.title)}</span>
+        <span class="small faint">${j.words ? j.words.toLocaleString() + "w" : ""}</span>
+        ${j.hold ? '<span class="small s-failed">held</span>' : ""}
+        <button class="mode ${j.backend === "mlx" ? "good" : "fast"}"
+                data-backend="${esc(j.id)}" data-current="${esc(j.backend || "")}"
+                title="${j.backend === "mlx"
+                  ? "Breeze: slower, cloned voices. Click for the fast one."
+                  : "Kokoro: fast, voice packs. Click for the slower, better one."}"
+        >${j.backend === "mlx" ? "good" : "fast"}</button>
+        <button class="icon" data-play="${esc(j.id)}"
+                title="Hear the narrator for this episode">▶</button>
+        <span class="voice" title="narrator">${esc(j.voice || "—")}</span>
+        <button class="icon" data-reroll="${esc(j.id)}"
+                title="Roll a different narrator for this episode">↻</button>
+        <button class="icon" data-move="${esc(j.id)}" data-dir="-1" title="Move up">↑</button>
+        <button class="icon" data-move="${esc(j.id)}" data-dir="1" title="Move down">↓</button>
+        <button data-hold="${esc(j.id)}">${j.hold ? "Release" : "Hold"}</button>
+        <button class="icon danger" data-cancel="${esc(j.id)}"
+                title="Take this out of the queue">✕</button>
+      </li>`).join("") +
+    queued.map((j) => `
+      <li class="row">
+        <span class="grip faint">·</span>
+        <span class="title faint">${esc(j.title)}</span>
+        <span class="small faint">preparing…</span>
+      </li>`).join("");
+}
+
+function renderRecent(rows) {
+  $("recent").innerHTML = rows.map((j) => `
+    <tr>
+      <td class="faint">${esc(j.id)}</td>
+      <td class="s-${j.state}">${j.state}</td>
+      <td class="n">${clock(j.duration_s)}</td>
+      <td class="n">${j.rtf ? j.rtf.toFixed(2) : "—"}</td>
+      <td class="n">${j.flagged || ""}</td>
+      <td class="${j.editable ? "title click" : ""}" ${j.editable ? `data-edit="${esc(j.id)}"` : ""}
+          title="${esc(j.error || j.title)}">${esc(j.title)}</td>
+    </tr>`).join("");
+}
+
+async function refresh() {
+  let state;
+  try { state = await api("/api/state"); }
+  catch { $("apidot").className = "dot down"; $("apitxt").textContent = "api unreachable"; return; }
+  current = state;
+  $("apidot").className = "dot up";
+  $("apitxt").textContent = "api";
+  $("feed").href = state.feed_url; $("feed").textContent = state.feed_url;
+  const hold = state.hold_new;
+  $("holdnew").textContent = hold ? "new: hold" : "new: auto";
+  $("holdnew").className = "mode " + (hold ? "good" : "fast");
+  $("holdnew").title = hold
+    ? "New articles wait after preparation, so you can read the text and pick a voice. Click to render them automatically."
+    : "New articles render as soon as their text is ready. Click to hold them for a look first.";
+  $("totals").textContent =
+    `${state.episodes} episode${state.episodes === 1 ? "" : "s"} · ${hms(state.audio_s)} of audio` +
+    (state.failed ? ` · ${state.failed} failed` : "");
+  renderNow(state.now);
+  if (!dragId) renderQueue(state.ready, state.queued);
+  renderRecent(state.recent);
+  syncPlayButtons();
+  $("gate").hidden = true; $("app").hidden = false;
+}
+
+// -- reordering -------------------------------------------------------------
+const queueEl = $("queue");
+queueEl.addEventListener("dragstart", (e) => {
+  const li = e.target.closest("li.q"); if (!li) return;
+  dragId = li.dataset.id; li.classList.add("dragging");
+  e.dataTransfer.effectAllowed = "move";
+});
+queueEl.addEventListener("dragover", (e) => {
+  e.preventDefault();
+  const li = e.target.closest("li.q");
+  [...queueEl.querySelectorAll("li.q")].forEach((n) => n.classList.toggle("over", n === li));
+});
+queueEl.addEventListener("drop", async (e) => {
+  e.preventDefault();
+  const target = e.target.closest("li.q");
+  const dragged = queueEl.querySelector(`li.q[data-id="${dragId}"]`);
+  if (target && dragged && target !== dragged) {
+    const rows = [...queueEl.querySelectorAll("li.q")];
+    target.parentNode.insertBefore(dragged, rows.indexOf(dragged) < rows.indexOf(target)
+      ? target.nextSibling : target);
+  }
+  const order = [...queueEl.querySelectorAll("li.q")].map((n) => n.dataset.id);
+  dragId = null;
+  queueEl.querySelectorAll("li.q").forEach((n) => n.classList.remove("dragging", "over"));
+  try { await api("/api/queue/order", { method: "POST", body: JSON.stringify({ order }) });
+        toast("queue reordered"); } catch { toast("could not reorder"); }
+  refresh();
+});
+queueEl.addEventListener("dragend", () => {
+  dragId = null;
+  queueEl.querySelectorAll("li.q").forEach((n) => n.classList.remove("dragging", "over"));
+});
+
+// -- editing ----------------------------------------------------------------
+// Fetch the clip with the auth header and play it from a blob, so the token
+// never has to travel in a URL.
+let audio = null, audioId = null, audioUrl = null;
+
+const PLAY = "▶", PAUSE = "\u2016";
+
+// The queue redraws every couple of seconds, which would otherwise reset the
+// button mid-sample. Re-apply the state after every render instead of holding
+// on to a node that is about to be replaced.
+function syncPlayButtons() {
+  const live = audio && !audio.paused && !audio.ended;
+  document.querySelectorAll("[data-play]").forEach((b) => {
+    const active = live && b.dataset.play === audioId;
+    b.textContent = active ? PAUSE : PLAY;
+    b.classList.toggle("playing", active);
+    b.title = active ? "Stop the sample" : "Hear the narrator for this episode";
+  });
+}
+
+function stopVoice() {
+  if (audio) audio.pause();
+  syncPlayButtons();
+}
+
+async function playVoice(id) {
+  // A second press on the same row stops it rather than starting again.
+  if (audioId === id && audio && !audio.ended) {
+    if (audio.paused) { await audio.play(); } else { audio.pause(); }
+    syncPlayButtons();
+    return;
+  }
+  if (audio) { audio.pause(); }
+  if (audioUrl) { URL.revokeObjectURL(audioUrl); audioUrl = null; }
+  try {
+    const response = await fetch(`/api/jobs/${id}/voice.wav`, {
+      headers: { authorization: "Bearer " + TOKEN },
+    });
+    if (!response.ok) { toast("no narrator assigned yet"); return; }
+    audioUrl = URL.createObjectURL(await response.blob());
+    audio = new Audio(audioUrl);
+    audioId = id;
+    for (const event of ["play", "pause", "ended"]) {
+      audio.addEventListener(event, syncPlayButtons);
+    }
+    await audio.play();
+  } catch (err) { toast("could not play the sample"); }
+}
+
+document.body.addEventListener("click", async (e) => {
+  const play = e.target.closest("[data-play]");
+  if (play) { playVoice(play.dataset.play); return; }
+
+  const cancel = e.target.closest("[data-cancel]");
+  if (cancel) {
+    const id = cancel.dataset.cancel;
+    const running = current?.now?.id === id;
+    if (running && !confirm(
+      "Stop this render?\n\nThe chunks already made are kept, so releasing it " +
+      "again carries on from where it stopped.")) return;
+    cancel.disabled = true;
+    try {
+      await api(`/api/jobs/${id}/cancel`, { method: "POST" });
+      toast(running ? "stopping after the current chunk" : "taken out of the queue");
+      await refresh();
+    } catch (err) { toast("could not stop it"); }
+    finally { cancel.disabled = false; }
+    return;
+  }
+
+  const mode = e.target.closest("[data-backend]");
+  if (mode) {
+    // Two backends, two orders of magnitude apart. Choosing one per article is
+    // the whole point; they share no voices, so the narrator is recast.
+    const next = mode.dataset.current === "mlx" ? "kokoro" : "mlx";
+    mode.disabled = true;
+    try {
+      const r = await api(`/api/jobs/${mode.dataset.backend}/backend?name=${next}`,
+                          { method: "POST" });
+      toast(next === "mlx" ? "slower, better voice" : "fast voice");
+      audioId = null;
+      await refresh();
+    } catch (err) { toast("could not switch backend"); }
+    finally { mode.disabled = false; }
+    return;
+  }
+
+  const reroll = e.target.closest("[data-reroll]");
+  if (reroll) {
+    reroll.disabled = true;
+    try {
+      const result = await api(`/api/jobs/${reroll.dataset.reroll}/voice/reroll`,
+                               { method: "POST" });
+      toast(`narrator for this episode is now ${result.voice}`);
+      await refresh();
+      // Play it straight away: the point is to judge it by ear. Rolling again
+      // replaces the sample rather than stacking a second one on top.
+      audioId = null;
+      playVoice(reroll.dataset.reroll);
+    } catch (err) {
+      toast("no other voice available — run `readcast voices sample`");
+    } finally { reroll.disabled = false; }
+    return;
+  }
+
+  // Buttons, because drag and drop is awkward with a keyboard and absent on touch.
+  const move = e.target.closest("[data-move]");
+  if (move) {
+    const order = current.ready.map((j) => j.id);
+    const from = order.indexOf(move.dataset.move);
+    const to = from + Number(move.dataset.dir);
+    if (from < 0 || to < 0 || to >= order.length) return;
+    order.splice(to, 0, order.splice(from, 1)[0]);
+    await api("/api/queue/order", { method: "POST", body: JSON.stringify({ order }) });
+    refresh(); return;
+  }
+  const hold = e.target.closest("[data-hold]");
+  if (hold) {
+    const job = current?.ready.find((j) => j.id === hold.dataset.hold);
+    await api(`/jobs/${hold.dataset.hold}/hold?release=${job?.hold ? "true" : "false"}`,
+              { method: "POST" });
+    refresh(); return;
+  }
+  const open = e.target.closest("[data-edit]");
+  if (open) openEditor(open.dataset.edit);
+});
+
+async function openEditor(id) {
+  const data = await api(`/api/jobs/${id}/text`);
+  editing = id; dirty = false; editingData = data;
+  $("ed-title").textContent = data.title || id;
+  $("ed-text").value = data.text;
+  $("ed-text").readOnly = !data.editable;
+  $("ed-meta").textContent = data.editable
+    ? `${data.text.split(/\s+/).filter(Boolean).length.toLocaleString()} words`
+    : `${data.state} — read only while the audio lane holds it`;
+  $("ed-msg").textContent = data.exists ? "" : "no text yet — this job has not been prepared";
+
+  // Only offer what will actually do something. "Release" on a finished
+  // episode used to be a no-op that claimed otherwise.
+  const waiting = data.state === "ready";
+  const finished = data.state === "done" || data.state === "failed";
+  $("ed-save").hidden = !data.editable;
+  $("ed-rules").hidden = !data.exists || !data.editable;
+  $("ed-hold").hidden = !(waiting && !data.hold);
+  $("ed-release").hidden = !(waiting && data.hold);
+  $("ed-rerender").hidden = !(finished && data.exists);
+  $("ed-rerender").textContent = `Re-render (~${hms(data.rerender_s)})`;
+  $("editor").showModal();
+}
+
+$("ed-text").addEventListener("input", () => { dirty = true; $("ed-msg").textContent = "unsaved"; });
+$("ed-close").addEventListener("click", () => {
+  if (dirty && !confirm("Close without saving?")) return;
+  $("editor").close();
+});
+$("editor").addEventListener("cancel", (e) => { if (dirty && !confirm("Close without saving?")) e.preventDefault(); });
+
+$("ed-save").addEventListener("click", async () => {
+  try {
+    const r = await api(`/api/jobs/${editing}/text`,
+      { method: "PUT", body: JSON.stringify({ text: $("ed-text").value }) });
+    dirty = false; $("ed-msg").textContent = `saved — ${r.words.toLocaleString()} words`;
+    toast("text saved"); refresh();
+  } catch (err) { $("ed-msg").textContent = "save failed: " + err.message.slice(0, 120); }
+});
+$("ed-rules").addEventListener("click", async () => {
+  if (dirty && !confirm("Re-running the rules overwrites your edits. Continue?")) return;
+  await api(`/jobs/${editing}/rerender?from=preparing`, { method: "POST" });
+  $("editor").close(); toast("re-preparing from the rules"); refresh();
+});
+$("ed-hold").addEventListener("click", async () => {
+  await api(`/jobs/${editing}/hold`, { method: "POST" }); toast("held"); refresh();
+});
+$("ed-release").addEventListener("click", async () => {
+  await api(`/jobs/${editing}/hold?release=true`, { method: "POST" });
+  $("editor").close(); toast("released — the lane will take it in queue order"); refresh();
+});
+$("ed-rerender").addEventListener("click", async () => {
+  const cost = hms(editingData?.rerender_s);
+  if (!confirm(
+    `Re-render this episode?\n\nIt will be synthesized again from the current ` +
+    `text, which takes up to about ${cost} of machine time. The episode keeps ` +
+    `its place in the feed until the new audio is ready.`)) return;
+  await api(`/jobs/${editing}/rerender?from=synthesizing`, { method: "POST" });
+  $("editor").close(); toast("queued for re-render"); refresh();
+});
+
+// -- boot -------------------------------------------------------------------
+$("holdnew").addEventListener("click", async () => {
+  const next = !current?.hold_new;
+  await api(`/api/settings/hold-new?on=${next}`, { method: "POST" });
+  toast(next ? "new articles will wait for you" : "new articles will render automatically");
+  refresh();
+});
+
+$("tokgo").addEventListener("click", () => {
+  TOKEN = $("tok").value.trim();
+  localStorage.setItem("readcast-token", TOKEN);
+  refresh();
+});
+$("tok").addEventListener("keydown", (e) => { if (e.key === "Enter") $("tokgo").click(); });
+
+if (!TOKEN) gate(); else refresh();
+setInterval(() => { if (TOKEN && !$("editor").open) refresh(); }, 2000);
+</script>
+</body>
+</html>

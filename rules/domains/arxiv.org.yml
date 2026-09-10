@@ -1,0 +1,21 @@
+version: 1
+extract:
+  # Papers carry a lot that is not the paper. These are the defaults; list them
+  # here to change what counts as back matter for this source.
+  drop_front_matter: true      # licence grants, authors, affiliations, emails
+  drop_back_matter: true
+  drop_page_numbers: true
+  drop_running_heads: true
+  dehyphenate: true
+  back_matter:
+    - References
+    - Bibliography
+    - Appendix
+    - Appendices
+    - Acknowledgments
+    - Acknowledgements
+    - Supplementary Material
+    - Broader Impact
+    - Ethics Statement
+    - Limitations
+    - Reproducibility Statement

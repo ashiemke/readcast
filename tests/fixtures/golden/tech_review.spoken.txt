@@ -1,0 +1,19 @@
+## The datacenter bill comes due
+
+Capital spending on A I infrastructure reached one point two million dollars per rack in twenty twenty-five, and the operators who signed those contracts in nineteen eighty-four-era buildings are discovering what retrofitting costs. The math is not subtle.
+
+A single H100 tray draws more power than an entire nineteen nineties server room. Cooling now accounts for thirty-eight percent of the operating budget, up from twelve percent a decade ago. The read or write path to storage has not kept pace, and neither has the electrical service.
+
+## What the operators say
+
+“We budgeted three to five days of downtime per retrofit,” said one facilities lead, who asked not to be named. “It took three weeks.” Figure 3 shows the gap between planned and actual outage windows across forty sites.
+
+The grid connection is the constraint now, not the silicon. Every site we evaluated in twenty twenty-six had the same problem.
+
+koo-ber-net-ees scheduling helps at the margin, but koob-control cannot conjure megawatts. Teams running engine ex in front of a sixteen gigabytes inference cache report that the cache is rarely the bottleneck; for example the interconnect saturates first.
+
+## The numbers
+
+The full dataset is published at and the methodology follows Whitfield et all. Retrofits ran third in cost per megawatt behind new builds and grid upgrades. Filed on August twenty-fifth, twenty twenty-six.
+
+Utilities have proposed a five kilometers transmission spur at approximately forty million dollars, which would cut latency to the exchange by four milliseconds. The proposal is under review.

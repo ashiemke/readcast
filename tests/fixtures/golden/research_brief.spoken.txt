@@ -1,0 +1,21 @@
+## Thermal drift in edge inference accelerators
+
+Edge accelerators deployed in unconditioned enclosures show measurable accuracy drift above forty-five degrees Celsius. Across sixty devices observed for ninety days, top-1 accuracy fell two point four percent for every ten degrees Celsius above the rated envelope.
+
+## Method
+
+Devices were instrumented with a one millisecond sampling loop and a two gigabytes ring buffer. Ambient temperature ranged from eighteen to fifty-two degrees Celsius. We followed the protocol of Okafor et all. and report results as the mean of three runs, that is one hundred eighty device-days in total.
+
+The measurement harness is available at and weighs four megabytes. Each device reported at ninety kilometers per hour equivalent bus throughput on the internal fabric.
+
+## Results
+
+Drift was not uniform. G P U-class parts held accuracy within zero point eight percent up to fifty-five degrees Celsius, while the smaller NPU parts degraded from four hundred megahertz onward. Equation 2 describes the observed relationship. Between twenty twenty-four and twenty twenty-six the failure rate in field returns rose from three percent to seven percent.
+
+Thermal budget, not compute budget, is the binding constraint on sustained edge inference.
+
+## Discussion
+
+Operators should budget two hundred fifty dollars per device for passive cooling, or one point four thousand dollars per rack for active cooling, and plan a third revision of the enclosure. The full dataset covers May second, twenty twenty-six through August first, twenty twenty-six and is twelve gigabytes compressed.
+
+for the claim that duty cycling alone resolves the drift.

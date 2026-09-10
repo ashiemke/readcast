@@ -1,0 +1,58 @@
+# Common proper nouns. A term found here is not written to unknowns.jsonl.
+# One per line, case-insensitive match. Comments start with #.
+aaron adam adrian alan albert alex alexander alice amanda amy andrea andrew angela ann anna anne
+anthony antonio arthur ashley barbara benjamin betty beverly bill bob bradley brandon brenda brian
+bruce bryan carl carlos carol carolyn catherine cathy charles cheryl chris christian christina
+christine christopher cynthia dana daniel danielle david dawn deborah debra denise dennis diana
+diane donald donna doris dorothy douglas earl edward eileen elaine eleanor elena elizabeth ellen
+emily emma eric erica erin ethan eugene evelyn frances francis frank fred gabriel gary george gerald
+gloria grace gregory hannah harold harry heather helen henry holly howard ian irene isaac jack
+jacob jacqueline james jane janet janice jason jean jeffrey jennifer jeremy jerry jesse jessica jill
+joan joe john johnny jonathan jordan jose joseph joshua joyce juan judith judy julia julie justin
+karen katherine kathleen kathryn kayla keith kelly kenneth kevin kimberly kyle larry laura lauren
+lawrence leonard leslie linda lisa logan lori louis lucas lucy luis madison marcus margaret maria
+marie marilyn mark martha martin marvin mary matthew megan melissa michael michelle mike mildred
+molly monica nancy natalie nathan nicholas nicole noah norma olivia oscar pamela patricia patrick
+paul paula peter philip phillip rachel ralph randy raymond rebecca regina renee richard rita robert
+roger ronald rose roy russell ruth ryan samantha samuel sandra sara sarah scott sean sharon shirley
+sophia stephanie stephen steve steven susan sylvia tammy teresa terry theresa thomas tiffany timothy
+tina todd tracy travis tyler valerie vanessa victor victoria vincent virginia walter wanda wayne
+wendy william willie zachary
+# surnames
+adams alexander allen anderson bailey baker barnes bell bennett brooks brown bryant butler campbell
+carter chen clark coleman collins cook cooper cox cruz davis diaz edwards evans flores foster garcia
+gonzalez gray green griffin hall harris hayes henderson hernandez hill howard hughes hunter jackson
+james jenkins johnson jones kelly kim king lee lewis long lopez martin martinez miller mitchell
+moore morgan morris murphy myers nelson nguyen parker patel patterson perez perry peterson phillips
+powell price ramirez reed richardson rivera roberts robinson rodriguez rogers ross russell sanchez
+sanders scott simmons smith stewart sullivan taylor thomas thompson torres turner walker wallace
+ward washington watson white williams wilson wood wright young
+# places
+africa alabama alaska amsterdam antarctica argentina arizona arkansas asia athens atlanta auckland
+australia austria bangalore bangkok barcelona beijing belgium berlin bogota bolivia boston brazil
+brisbane britain brussels bucharest budapest buenos cairo california cambridge canada cape chicago
+chile china cleveland colombia colorado copenhagen dallas delaware delhi denmark denver detroit
+dubai dublin ecuador edinburgh egypt england estonia ethiopia europe finland florida france
+frankfurt geneva georgia germany ghana glasgow greece guatemala hamburg hanoi hawaii helsinki
+hongkong houston hungary iceland idaho illinois india indiana indonesia iowa iran iraq ireland
+israel istanbul italy jakarta japan jerusalem johannesburg kansas kentucky kenya korea kuwait
+lagos latvia lebanon lisbon lithuania london louisiana madrid maine malaysia manchester manila
+maryland massachusetts melbourne mexico miami michigan milan minneapolis minnesota mississippi
+missouri montana montreal morocco moscow mumbai munich nairobi nebraska netherlands nevada
+newzealand nigeria norway ohio oklahoma oregon oslo ottawa pakistan panama paris pennsylvania peru
+philadelphia philippines phoenix poland portland portugal prague qatar quebec rome romania russia
+sanfrancisco santiago saudi scotland seattle seoul serbia shanghai singapore slovakia slovenia
+somalia spain stockholm sudan sweden switzerland sydney taipei taiwan tanzania tennessee texas
+thailand tokyo toronto tunisia turkey uganda ukraine uruguay utah vancouver venezuela vermont
+vienna vietnam virginia warsaw washington wellington wisconsin wyoming yemen zambia zurich
+# organizations and products in wide circulation
+adobe airbnb alphabet amazon android anthropic apache apple arm atlassian bloomberg bosch cisco
+cloudflare comcast databricks debian dell deloitte disney docker ebay ericsson facebook fedex
+figma firefox ford fujitsu github gitlab google hitachi honda huawei hulu ibm ikea instagram intel
+intuit jira kafka kubernetes lenovo lg linkedin linux lyft mastercard mcdonalds mckinsey medium
+meta micron microsoft mongodb mozilla netflix nintendo nokia nvidia openai oracle palantir paypal
+pepsi pfizer philips pinterest playstation postgres postgresql python qualcomm reddit redhat redis
+reuters roblox salesforce samsung sap shopify siemens signal slack snapchat snowflake sony spotify
+square stripe substack tencent tesla tiktok toshiba toyota twilio twitter uber ubuntu unilever
+verizon visa vmware volkswagen walmart waymo whatsapp wikipedia windows xbox xerox yahoo youtube
+zoom zurich

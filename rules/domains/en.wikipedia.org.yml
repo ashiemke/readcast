@@ -1,0 +1,18 @@
+version: 1
+extract:
+  # Precision mode drops Wikipedia's headings entirely; the recall pass keeps
+  # them, and the chapter marks depend on them.
+  favor_precision: false
+  drop_selectors:
+    - ".navbox"
+    - ".reflist"
+    - ".mw-editsection"
+    - ".hatnote"
+strip:
+  patterns:
+    - id: wikipedia-back-matter
+      match: '^## (References|External links|Notes|Further reading|See also|Bibliography|Sources)\b.*$'
+      flags: ims
+      note: >
+        Everything from the first back-matter heading to the end of the article.
+        Citation lists are unlistenable and are most of a long Wikipedia page.

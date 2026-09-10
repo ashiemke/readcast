@@ -1,0 +1,80 @@
+# One entry per term. Keep sorted by `match` so a git diff stays readable.
+version: 1
+
+defaults:
+  case: sensitive          # sensitive | insensitive
+  boundary: word           # word | substring
+
+terms:
+  - match: AI
+    mode: spell
+    note: "longest match wins, so AIX below is untouched"
+
+  - match: AIX
+    mode: word
+
+  - match: API
+    mode: spell
+
+  - match: AWS
+    mode: spell            # "A W S"
+
+  - match: CEO
+    mode: spell
+
+  - match: CPU
+    mode: spell
+
+  - match: GDPR
+    mode: spell
+
+  - match: GPU
+    mode: spell
+
+  - match: Kubernetes
+    mode: respell
+    say: koo-ber-net-ees
+
+  - match: LLM
+    mode: spell
+
+  - match: NASA
+    mode: word             # leave it alone, the engine says it correctly
+
+  - match: PyTorch
+    mode: respell
+    say: pie torch
+
+  - match: SQL
+    mode: respell
+    say: sequel
+    note: "operator preference, not the only correct reading"
+
+  - match: SSD
+    mode: spell
+
+  - match: Xi Jinping
+    mode: respell
+    say: shee jin ping
+    note: "proper noun, two words, must match as a phrase"
+
+  - match: et al.
+    mode: respell
+    say: et all.
+    note: >
+      The trailing period stays. The term swallows the sentence-ending period,
+      and the chunker needs it to find the sentence boundary.
+
+  - match: km/h
+    mode: replace
+    say: kilometers per hour
+    note: "overrides the generic slash rule"
+
+  - match: kubectl
+    mode: respell
+    say: koob-control
+
+  - match: nginx
+    mode: respell
+    say: engine ex
+    case: insensitive

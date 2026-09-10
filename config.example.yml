@@ -1,0 +1,116 @@
+# readcast configuration.
+# Copy this to config.yml and edit. config.yml is gitignored: it holds the
+# api_token and the base_url your phone reaches, neither of which belongs in git.
+#
+#   cp config.example.yml config.yml
+#   python3 -c "import secrets; print(secrets.token_urlsafe(32))"   # api_token
+
+base_url: http://127.0.0.1:8788
+api_token: CHANGE_ME
+data_dir: ./data
+rules_dir: ./rules
+
+tts:
+  # kokoro: ~30x faster than realtime, fixed voice packs.
+  # mlx (Breeze): ~0.3x realtime, clones a voice from a reference clip.
+  backend: kokoro
+  voice: default
+  mlx_url: http://127.0.0.1:8770/v1
+  model: mlx-community/Breeze-TTS-2-mlx
+  instructions:
+    intro: "Read as a brief announcement. Neutral and clear."
+    heading: "Read as a section heading. Slightly slower, with a falling tone."
+    body: "Read as narration for an audiobook. Calm, even pace."
+    quote: "Read as a quotation from another writer. Slightly softer."
+    aside: "Read as an aside. Lighter and a little quicker."
+
+  # Breeze samples a new speaker on every request unless it is given a
+  # reference clip. The switching that grates is switching mid-article, so the
+  # cast is fixed per episode and varies between them.
+  #   per_episode - a narrator per article, least recently used first
+  #   fixed       - the same three voices for everything (tts.voices below)
+  voice_mode: per_episode
+  voice_pool: ./data/voices/pool
+
+  voices:            # used when voice_mode is fixed
+    main:  ./data/voices/main.wav
+    quote: ./data/voices/quote.wav
+    aside: ./data/voices/aside.wav
+
+  roles:            # which voice reads which kind of chunk
+    intro: main
+    heading: main
+    body: main
+    quote: quote    # blockquotes
+    aside: aside    # a paragraph that is entirely parenthetical
+
+  backends:
+    mlx:
+      temperature: 0.6      # lower keeps the delivery closer to the reference
+
+  # Optional per-backend overrides. Only the active backend is used.
+      # The first call loads several gigabytes of weights into memory.
+      timeout_s: 900
+    kokoro:
+      # Non-autoregressive: about thirty times faster than Breeze on the same
+      # machine, with fixed voice packs instead of reference clips.
+      url: http://127.0.0.1:8770/v1
+      model: mlx-community/Kokoro-82M-bf16
+      voice: am_michael
+      cost_per_1k_chars: 0.0
+      # The pool a per-episode narrator is drawn from. `curl
+      # localhost:8770/v1/audio/voices?model=...` lists all 54.
+      # Narrators a per-episode cast is drawn from. Curate by ear:
+      #   readcast voices audition --backend kokoro
+      voices: [am_michael, bm_george, af_heart, bf_emma, am_puck, bf_alice,
+               am_eric, af_nicole, am_liam, bf_isabella, am_fenrir]
+    elevenlabs:
+      url: https://api.elevenlabs.io/v1
+      model: eleven_turbo_v2_5
+      voice: 21m00Tcm4TlvDq8ikWAM
+      api_key_env: ELEVENLABS_API_KEY
+      cost_per_1k_chars: 0.30
+    openai:
+      url: https://api.openai.com/v1
+      model: gpt-4o-mini-tts
+      voice: alloy
+      api_key_env: OPENAI_API_KEY
+      cost_per_1k_chars: 0.015
+
+pipeline:
+  # Text preparation runs the moment a job is submitted, so spoken.txt is on
+  # disk within seconds. Set this to true to make every job wait for an
+  # explicit `readcast release <id>` before the slow audio stage begins.
+  hold_for_review: false
+
+chunk:
+  target_chars: 300
+  max_chars: 450
+
+verify:
+  enabled: true
+  max_cer: 0.15
+  retries: 2
+  min_chars: 40          # below this, the check is noise, not signal
+  whisper_model: mlx-community/whisper-small-mlx
+
+audio:
+  lufs: -16
+  bitrate_kbps: 64
+  pause_paragraph_ms: 500
+  pause_heading_ms: 1200
+  pause_after_intro_ms: 1000
+
+fetch:
+  timeout_s: 20
+  max_client_html_bytes: 4194304
+  min_extracted_chars: 500
+  user_agent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+
+feed:
+  title: readcast
+  author: ""
+  description: "Articles, read aloud."
+  language: en-us
+  max_items: 100
+  intro_template: "{title}. From {publication}. By {author}. Published {published_at}."

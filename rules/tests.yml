@@ -1,0 +1,81 @@
+# readcast rules test
+cases:
+  - name: strips parenthetical figure reference
+    in:  "The effect was clear (see Figure 2b)."
+    out: "The effect was clear."
+
+  - name: keeps inline figure reference
+    in:  "Fig. 3 shows the drop."
+    out: "Figure 3 shows the drop."
+
+  - name: currency with magnitude
+    in:  "Revenue hit $1.2M last year."
+    out: "Revenue hit one point two million dollars last year."
+
+  - name: year reads as pairs
+    in:  "It shipped in 1984."
+    out: "It shipped in nineteen eighty-four."
+
+  - name: lexicon overrides generic slash rule
+    in:  "It ran at 90 km/h."
+    out: "It ran at ninety kilometers per hour."
+
+  - name: longest match wins
+    in:  "The AIX box and the AI model."
+    out: "The AIX box and the A I model."
+
+  - name: frozen span is not re-edited
+    in:  "The budget was $3M."
+    out: "The budget was three million dollars."
+
+  - name: strips bracket citation
+    in:  "The result held [4-6]."
+    out: "The result held."
+
+  - name: percent
+    in:  "Latency fell 12%."
+    out: "Latency fell twelve percent."
+
+  - name: range
+    in:  "It takes 3-5 days."
+    out: "It takes three to five days."
+
+  - name: iso date
+    in:  "Filed on 2026-08-25."
+    out: "Filed on August twenty-fifth, twenty twenty-six."
+
+  - name: ordinal
+    in:  "The 3rd attempt worked."
+    out: "The third attempt worked."
+
+  - name: units follow the number
+    in:  "A 5 km run and 16 GB of memory."
+    out: "A five kilometers run and sixteen gigabytes of memory."
+
+  - name: latin abbreviation
+    in:  "Use a cache, e.g. Redis."
+    out: "Use a cache, for example Redis."
+
+  - name: url is dropped
+    in:  "Read more at https://example.com/page for details."
+    out: "Read more at for details."
+
+  - name: spell mode inserts letter spacing
+    in:  "The AWS bill grew."
+    out: "The A W S bill grew."
+
+  - name: respell mode
+    in:  "The Kubernetes scheduler."
+    out: "The koo-ber-net-ees scheduler."
+
+  - name: symbols
+    in:  "It took ~4 hours & cost $500."
+    out: "It took approximately four hours and cost five hundred dollars."
+
+  - name: generic slash still applies
+    in:  "The read/write path."
+    out: "The read or write path."
+
+  - name: footnote marker is stripped
+    in:  "The claim† was checked."
+    out: "The claim was checked."

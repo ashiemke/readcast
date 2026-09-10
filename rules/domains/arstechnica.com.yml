@@ -1,0 +1,15 @@
+version: 1
+extract:
+  prefer_client_html: false
+  drop_selectors:
+    - ".newsletter-inline"
+    - ".author-bio"
+strip:
+  patterns:
+    - id: site-promo
+      match: 'Subscribe to .* for more'
+lexicon:
+  terms:
+    - match: Ars
+      mode: respell
+      say: arse

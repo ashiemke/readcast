@@ -1,0 +1,17 @@
+## Notes on shipping slowly
+
+I have been building the same product for three years. In that time the team grew from two people to eleven, and the release cadence went from weekly to roughly monthly. That sounds like failure. It was not.
+
+The first version shipped in twenty twenty-three with an sequel backend, a single A P I server, and no tests. It served twelve thousand requests a day and fell over twice a week. We spent forty percent of every sprint on incidents.
+
+## What changed
+
+We stopped measuring velocity and started measuring the time between a bug report and a fix in production. That number was nine days. It is now four to six hours. The work that moved it was unglamorous: a test suite, a staging environment, and a rule that nobody merges on a Friday.
+
+Speed is a lagging indicator of clarity.
+
+The A W S bill went from four hundred dollars a month to two point eight thousand dollars, then back down to one point one thousand dollars once we understood our own access patterns. compare the storage tiering work described at which took three weeks and paid for itself in five months.
+
+## What I would tell myself in twenty twenty-three
+
+Write the test. Ship the smaller thing. A five hundred milliseconds page load is not an emergency; a thirty percent error rate is. And do not let anyone tell you that a team of two people needs a koo-ber-net-ees cluster.

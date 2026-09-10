@@ -1,0 +1,43 @@
+# Everything here is deleted. Nothing here reaches the speech engine.
+version: 1
+
+structural:
+  code_blocks: drop          # drop | announce
+  code_announce_text: "Code block omitted."
+  tables: drop
+  image_alt: drop
+  blockquotes: keep
+  headings: keep
+
+patterns:
+  - id: parenthetical-figure-ref
+    match: '\((?:see\s+)?(?:Fig(?:ure)?|Tab(?:le)?|Eq(?:uation)?)\.?\s*\d+[a-z]?\)'
+    flags: i
+    note: "(Fig. 3)  (see Figure 2b)  (Table 1)"
+
+  - id: bracket-citation
+    match: '\[\d+(?:\s*[,–-]\s*\d+)*\]'
+    note: "[1]  [2,3]  [4-6]"
+
+  - id: footnote-marker
+    match: '[¹²³⁰-⁹†‡]{1,2}'
+    note: "superscript digits, dagger, double dagger"
+
+  - id: editorial-marker
+    match: '\[(citation needed|sic|emphasis added|clarification needed)\]'
+    flags: i
+
+  - id: bracket-editorial-word
+    match: '\[(edit|update|note \d+|[a-z])\]'
+    flags: i
+    note: >
+      Wikipedia-style section furniture: [edit] [update] [note 1] [a].
+      Prose almost never brackets a single lowercase word.
+
+  - id: email-address
+    match: '\b[\w.+-]+@[\w-]+\.[\w.-]+\b'
+    note: "author contact details read aloud are noise"
+
+  - id: social-boilerplate
+    match: '^(Share this|Follow us on|Sign up for our newsletter).*$'
+    flags: im

@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Thermal drift in edge inference accelerators</title>
+<meta property="og:site_name" content="Applied Systems Review">
+<meta name="author" content="R. Okafor">
+<meta property="article:published_time" content="2026-05-02T09:00:00Z">
+</head>
+<body>
+<article>
+<h1>Thermal drift in edge inference accelerators</h1>
+<p>Edge accelerators deployed in unconditioned enclosures show measurable
+accuracy drift above 45 &deg;C. Across 60 devices observed for 90 days, top-1
+accuracy fell 2.4% for every 10 &deg;C above the rated envelope (Table 1).</p>
+<h2>Method</h2>
+<p>Devices were instrumented with a 1 ms sampling loop and a 2 GB ring buffer.
+Ambient temperature ranged from 18-52 &deg;C. We followed the protocol of
+Okafor et al. and report results as the mean of 3 runs, i.e. 180 device-days
+in total [1,2].</p>
+<p>The measurement harness is available at https://asr.example.org/thermal-drift
+and weighs 4 MB. Each device reported at 90 km/h equivalent bus throughput on
+the internal fabric&#8224;.</p>
+<h2>Results</h2>
+<p>Drift was not uniform. GPU-class parts held accuracy within 0.8% up to 55
+&deg;C, while the smaller NPU parts degraded from 400 MHz onward. Eq. 2
+describes the observed relationship. Between 2024 and 2026 the failure rate in
+field returns rose from 3% to 7% [3-5].</p>
+<blockquote><p>Thermal budget, not compute budget, is the binding constraint on
+sustained edge inference.</p></blockquote>
+<h2>Discussion</h2>
+<p>Operators should budget $250 per device for passive cooling, or $1.4K per
+rack for active cooling, and plan a 3rd revision of the enclosure. The full
+dataset covers 2026-05-02 through 2026-08-01 and is 12 GB compressed.</p>
+<p>[citation needed] for the claim that duty cycling alone resolves the drift.</p>
+</article>
+</body>
+</html>

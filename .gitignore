@@ -1,0 +1,19 @@
+# Operator config: holds api_token and the base_url the phone reaches.
+# Start from config.example.yml.
+config.yml
+
+# Runtime state: jobs, audio, the feed, the SQLite db, voice clips, logs.
+# Leading slash matters: src/readcast/data/ is packaged wordlist data, not runtime state.
+/data/
+/logs/
+/compare/
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+
+.DS_Store

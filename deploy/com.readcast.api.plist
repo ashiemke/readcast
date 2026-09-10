@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  readcast API and worker.
+
+  Edit REPLACE_ME_HOME and REPLACE_ME_DIR, then:
+    cp deploy/com.readcast.api.plist ~/Library/LaunchAgents/
+    launchctl load -w ~/Library/LaunchAgents/com.readcast.api.plist
+    launchctl list | grep readcast
+-->
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.readcast.api</string>
+
+  <key>ProgramArguments</key>
+  <array>
+    <string>REPLACE_ME_DIR/.venv/bin/readcast</string>
+    <string>serve</string>
+    <string>--host</string>
+    <string>0.0.0.0</string>
+    <string>--port</string>
+    <string>8788</string>
+  </array>
+
+  <key>WorkingDirectory</key>
+  <string>REPLACE_ME_DIR</string>
+
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>READCAST_CONFIG</key>
+    <string>REPLACE_ME_DIR/config.yml</string>
+    <key>PATH</key>
+    <string>/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+  </dict>
+
+  <key>RunAtLoad</key>
+  <true/>
+  <key>KeepAlive</key>
+  <true/>
+
+  <key>StandardOutPath</key>
+  <string>REPLACE_ME_DIR/data/api.log</string>
+  <key>StandardErrorPath</key>
+  <string>REPLACE_ME_DIR/data/api.log</string>
+</dict>
+</plist>

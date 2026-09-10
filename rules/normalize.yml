@@ -1,0 +1,95 @@
+# Builtins carry the load. Operator regex handles the rest.
+version: 1
+
+builtins:
+  numbers:
+    enabled: true
+    max_digits_spelled: 9        # longer runs stay as digits
+    year_style: pairs            # 1984 -> "nineteen eighty-four"
+    ordinals: true               # 3rd -> "third"
+  currency:
+    enabled: true
+    default_code: USD
+    magnitudes: {K: thousand, M: million, B: billion, T: trillion}
+  dates:
+    enabled: true
+    style: month_day_year        # 2026-08-25 -> "August twenty-fifth, twenty twenty-six"
+  ranges:
+    enabled: true
+    joiner: " to "               # "3-5 days" -> "three to five days"
+  percent:
+    enabled: true                # "12%" -> "twelve percent"
+  units:
+    enabled: true
+    table:
+      km: kilometers
+      kg: kilograms
+      GB: gigabytes
+      TB: terabytes
+      MB: megabytes
+      ms: milliseconds
+      MHz: megahertz
+      GHz: gigahertz
+      "°F": degrees Fahrenheit
+      "°C": degrees Celsius
+  urls:
+    enabled: true
+    action: drop                 # drop | say_domain | read
+    drop_replacement: ""
+  symbols:
+    enabled: true
+    table:
+      "~": approximately
+      "≈": approximately
+      "±": plus or minus
+      "→": leads to
+      "&": and
+      "×": times
+      "∴": therefore
+      "<": less than
+      ">": greater than
+      "≤": less than or equal to
+      "≥": greater than or equal to
+
+rules:
+  - id: inline-figure-ref
+    phase: pre_builtin
+    match: '\b(Fig|Tab|Eq)\.\s*(\d+)([a-z])?'
+    say: '$1_EXPANDED $2 $3'
+    expand: {Fig: Figure, Tab: Table, Eq: Equation}
+    note: >
+      Keeps a reference that is the subject of the sentence.
+      strip.yml already removed the parenthetical form.
+
+  - id: slash-ambiguity
+    phase: post_builtin
+    match: '(\w+)/(\w+)'
+    say: '$1 or $2'
+    note: >
+      A slash means "or", "per", or "and" depending on context.
+      Default to "or". Add a lexicon entry for any specific term that needs
+      something else, for example "km/h".
+
+  - id: abbreviation-latin
+    phase: pre_builtin
+    match: '\b(e\.g\.|i\.e\.|cf\.|viz\.)'
+    flags: i
+    say: MAP
+    map:
+      "e.g.": "for example"
+      "i.e.": "that is"
+      "cf.": "compare"
+      "viz.": "namely"
+
+  - id: ellipsis
+    phase: post_builtin
+    match: '\s*(\.\.\.|…)\s*'
+    say: ', '
+    note: "An ellipsis reads as a pause, not as three dots."
+
+  - id: em-dash-pause
+    phase: post_builtin
+    match: '\s*[—–]\s*'
+    say: ', '
+    note: >
+      Runs after the range builtin, so "3-5 days" is already words by now.

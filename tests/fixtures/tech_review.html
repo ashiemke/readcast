@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>The datacenter bill comes due | Example Tech</title>
+<meta property="og:site_name" content="Example Tech">
+<meta property="og:title" content="The datacenter bill comes due">
+<meta property="article:author" content="By Dana Whitfield">
+<meta property="article:published_time" content="2026-08-25">
+</head>
+<body>
+<nav class="site-nav"><a href="/">Home</a> <a href="/reviews">Reviews</a></nav>
+<article>
+<h1>The datacenter bill comes due</h1>
+<p class="byline">By Dana Whitfield</p>
+<p>Capital spending on AI infrastructure reached $1.2M per rack in 2025, and the
+operators who signed those contracts in 1984-era buildings are discovering what
+retrofitting costs (see Figure 2b). The math is not subtle [1].</p>
+<p>A single H100 tray draws more power than an entire 1990s server room. Cooling
+now accounts for 38% of the operating budget, up from 12% a decade ago. The
+read/write path to storage has not kept pace, and neither has the electrical
+service [2,3].</p>
+<h2>What the operators say</h2>
+<p>&ldquo;We budgeted 3-5 days of downtime per retrofit,&rdquo; said one facilities
+lead, who asked not to be named. &ldquo;It took 3 weeks.&rdquo; Fig. 3 shows the
+gap between planned and actual outage windows across 40 sites.</p>
+<blockquote><p>The grid connection is the constraint now, not the silicon. Every
+site we evaluated in 2026 had the same problem.</p></blockquote>
+<p>Kubernetes scheduling helps at the margin, but kubectl cannot conjure
+megawatts. Teams running nginx in front of a 16 GB inference cache report that
+the cache is rarely the bottleneck; e.g. the interconnect saturates first.</p>
+<h2>The numbers</h2>
+<table>
+<tr><th>Site</th><th>Power</th><th>Cost</th></tr>
+<tr><td>Ashburn</td><td>42 MW</td><td>$310M</td></tr>
+<tr><td>Hillsboro</td><td>28 MW</td><td>$190M</td></tr>
+</table>
+<p>The full dataset is published at https://example.com/data/2026-racks and the
+methodology follows Whitfield et al. Retrofits ran 3rd in cost per megawatt
+behind new builds and grid upgrades. Filed on 2026-08-25.</p>
+<pre><code>SELECT site, sum(power_mw) FROM racks GROUP BY site;</code></pre>
+<p>Utilities have proposed a 5 km transmission spur at ~$40M, which would cut
+latency to the exchange by 4 ms. The proposal is under review [4-6].</p>
+<figure><img src="/img/chart.png" alt="A chart of power draw by site"></figure>
+<p>Share this article on your favorite network.</p>
+</article>
+<div class="newsletter-inline">Subscribe to Example Tech for more like this.</div>
+<div class="author-bio">Dana Whitfield covers infrastructure.</div>
+</body>
+</html>

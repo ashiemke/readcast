@@ -1,0 +1,11 @@
+version: 1
+extract:
+  prefer_client_html: true      # this site blocks server-side fetch
+  drop_selectors:
+    - ".subscription-widget"
+    - ".footer-cta"
+strip:
+  patterns:
+    - id: substack-promo
+      match: '^(Thanks for reading.*|Share \w+.*)$'
+      flags: im

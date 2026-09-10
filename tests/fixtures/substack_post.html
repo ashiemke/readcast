@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Notes on shipping slowly</title>
+<meta property="og:site_name" content="The Slow Build">
+<meta property="og:title" content="Notes on shipping slowly">
+<script type="application/ld+json">
+{"@type":"NewsArticle","author":{"name":"Marta Ellis"},
+ "datePublished":"2026-07-14","publisher":{"name":"The Slow Build"}}
+</script>
+</head>
+<body>
+<article class="post">
+<h1>Notes on shipping slowly</h1>
+<p>I have been building the same product for 3 years. In that time the team grew
+from 2 people to 11, and the release cadence went from weekly to roughly
+monthly. That sounds like failure. It was not.</p>
+<p>The first version shipped in 2023 with an SQL backend, a single API server,
+and no tests. It served 12,000 requests a day and fell over twice a week. We
+spent 40% of every sprint on incidents [1].</p>
+<h2>What changed</h2>
+<p>We stopped measuring velocity and started measuring the time between a bug
+report and a fix in production. That number was 9 days. It is now 4-6 hours.
+The work that moved it was unglamorous: a test suite, a staging environment,
+and a rule that nobody merges on a Friday.</p>
+<blockquote><p>Speed is a lagging indicator of clarity.</p></blockquote>
+<p>The AWS bill went from $400 a month to $2.8K, then back down to $1.1K once we
+understood our own access patterns. Cf. the storage tiering work described at
+https://theslowbuild.example.com/tiering which took 3 weeks and paid for itself
+in 5 months.</p>
+<h2>What I would tell myself in 2023</h2>
+<p>Write the test. Ship the smaller thing. A 500 ms page load is not an
+emergency; a 30% error rate is. And do not let anyone tell you that a team of
+2 people needs a Kubernetes cluster.</p>
+<p>Thanks for reading The Slow Build.</p>
+</article>
+<div class="subscription-widget">Subscribe now</div>
+<div class="footer-cta">Share The Slow Build with a friend</div>
+</body>
+</html>
