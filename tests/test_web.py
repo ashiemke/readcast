@@ -520,3 +520,20 @@ def test_the_dashboard_offers_stop_and_remove(client):
     assert "/cancel" in page
     assert 'id="stopnow"' in page
     assert "confirm(" in page      # stopping a render asks first
+
+
+def test_samples_can_be_auditioned_at_listening_speed(client):
+    """Judging a narrator at 1x tells you little if you listen at 3x."""
+    page = client.get("/ui").text
+    assert "data-speed=" in page
+    assert "const SPEEDS = [1, 1.5, 2, 3]" in page
+    assert "playbackRate" in page
+    # Pitch is preserved, which is what a podcast app does. Without it every
+    # voice simply sounds like a chipmunk and the test is worthless.
+    assert "preservesPitch" in page
+    assert "webkitPreservesPitch" in page
+    # The choice outlives the page, and the two-second queue redraw.
+    assert 'localStorage.setItem("readcast-speed"' in page
+    assert "data-speed" in page.split("function syncPlayButtons")[1][:800]
+    # A newly played sample starts at the chosen speed, not at 1x.
+    assert "applySpeed();" in page.split("audioId = id;")[1][:200]

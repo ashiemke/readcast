@@ -399,7 +399,12 @@ Each queued episode carries its narrator in the web dashboard, with **▶** to
 hear it and **↻** to roll a random different one — which plays the new voice
 straight away, since the only way to judge it is by ear. While a sample plays
 the button becomes a stop control, so a voice you have already made your mind up
-about does not have to finish. Rolling picks at random
+about does not have to finish.
+
+Beside it is a speed button cycling **1× · 1.5× · 2× · 3×**. Pitch is preserved,
+the way a podcast app does it, so a voice auditioned at 3× sounds like it will
+in your ears rather than like a chipmunk. Judging a narrator at 1× tells you
+little if you never listen at 1×. The choice is remembered. Rolling picks at random
 from the pool rather than stepping through it, so keep the pool large:
 `readcast voices sample -n 18` pre-renders a selection, which takes about half a
 minute per voice and cannot run while an episode is rendering. A job is cast when its text

@@ -45,6 +45,8 @@
   /* The arrows read as letters at the body size in a monospace face. */
   button.icon { padding:.15rem .45rem; min-width:1.9rem; font-size:1rem; line-height:1.1; }
   button.icon.playing { border-color:var(--live); color:var(--live); }
+  button.speed { min-width:2.6rem; font-size:.78rem; }
+  button.speed.fast { color:var(--live); border-color:#2f5568; }
   .voice { color:var(--dim); font-size:.78rem; min-width:5.6rem; display:inline-block;
            text-align:center; }
   button.mode { min-width:3.6rem; }
@@ -250,6 +252,7 @@ function renderQueue(ready, queued) {
         >${j.backend === "mlx" ? "good" : "fast"}</button>
         <button class="icon" data-play="${esc(j.id)}"
                 title="Hear the narrator for this episode">▶</button>
+        <button class="speed" data-speed="1">1×</button>
         <span class="voice" title="narrator">${esc(j.voice || "—")}</span>
         <button class="icon" data-reroll="${esc(j.id)}"
                 title="Roll a different narrator for this episode">↻</button>
@@ -344,6 +347,27 @@ let audio = null, audioId = null, audioUrl = null;
 
 const PLAY = "▶", PAUSE = "\u2016";
 
+// Podcast listening happens at speed, so auditioning a voice at 1x tells you
+// very little. Pitch is preserved, which is what a podcast app does — without
+// it everything simply sounds like a chipmunk.
+const SPEEDS = [1, 1.5, 2, 3];
+let speed = Number(localStorage.getItem("readcast-speed")) || 1;
+
+function applySpeed() {
+  if (!audio) return;
+  audio.preservesPitch = true;
+  audio.mozPreservesPitch = true;
+  audio.webkitPreservesPitch = true;
+  audio.playbackRate = speed;
+}
+
+function nextSpeed() {
+  speed = SPEEDS[(SPEEDS.indexOf(speed) + 1) % SPEEDS.length] || 1;
+  localStorage.setItem("readcast-speed", String(speed));
+  applySpeed();
+  syncPlayButtons();
+}
+
 // The queue redraws every couple of seconds, which would otherwise reset the
 // button mid-sample. Re-apply the state after every render instead of holding
 // on to a node that is about to be replaced.
@@ -354,6 +378,13 @@ function syncPlayButtons() {
     b.textContent = active ? PAUSE : PLAY;
     b.classList.toggle("playing", active);
     b.title = active ? "Stop the sample" : "Hear the narrator for this episode";
+  });
+  // Rebuilt with the queue every couple of seconds, so set it here rather
+  // than holding a node that is about to be replaced.
+  document.querySelectorAll("[data-speed]").forEach((b) => {
+    b.textContent = (Number.isInteger(speed) ? speed : speed.toFixed(1)) + "\u00d7";
+    b.classList.toggle("fast", speed !== 1);
+    b.title = `Play samples at ${b.textContent}, pitch preserved. Click to change.`;
   });
 }
 
@@ -379,6 +410,7 @@ async function playVoice(id) {
     audioUrl = URL.createObjectURL(await response.blob());
     audio = new Audio(audioUrl);
     audioId = id;
+    applySpeed();
     for (const event of ["play", "pause", "ended"]) {
       audio.addEventListener(event, syncPlayButtons);
     }
@@ -387,6 +419,8 @@ async function playVoice(id) {
 }
 
 document.body.addEventListener("click", async (e) => {
+  if (e.target.closest("[data-speed]")) { nextSpeed(); return; }
+
   const play = e.target.closest("[data-play]");
   if (play) { playVoice(play.dataset.play); return; }
 
